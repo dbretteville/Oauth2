@@ -183,7 +183,97 @@ router.get('/users', async (req, res) => {
 // Documentation Passport : https://www.passportjs.org/concepts/authentication/oauth/
 // =============================================================================
 
-// TODO 2: Votre code ici
+// GET /auth/google - Redirection vers Google
+router.get(
+  '/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false
+  })
+);
 
+// GET /auth/google/callback - Callback après authentification Google
+router.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=authentication_failed`
+  }),
+  (req, res) => {
+    try {
+      // Générer le JWT
+      const token = generateToken(req.user._id);
+      
+      // Rediriger vers le frontend avec le token
+      const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('Erreur génération token Google:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=token_generation_failed`);
+    }
+  }
+);
+
+// GET /auth/discord - Redirection vers Discord
+router.get(
+  '/discord',
+  passport.authenticate('discord', {
+    scope: ['identify', 'email'],
+    session: false
+  })
+);
+
+// GET /auth/discord/callback - Callback après authentification Discord
+router.get(
+  '/discord/callback',
+  passport.authenticate('discord', {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=authentication_failed`
+  }),
+  (req, res) => {
+    try {
+      // Générer le JWT
+      const token = generateToken(req.user._id);
+      
+      // Rediriger vers le frontend avec le token
+      const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('Erreur génération token Discord:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=token_generation_failed`);
+    }
+  }
+);
+
+// GET /auth/github - Redirection vers GitHub
+router.get(
+  '/github',
+  passport.authenticate('github', {
+    scope: ['user:email'],
+    session: false
+  })
+);
+
+// GET /auth/github/callback - Callback après authentification GitHub
+router.get(
+  '/github/callback',
+  passport.authenticate('github', {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=authentication_failed`
+  }),
+  (req, res) => {
+    try {
+      // Générer le JWT
+      const token = generateToken(req.user._id);
+      
+      // Rediriger vers le frontend avec le token
+      const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('Erreur génération token GitHub:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=token_generation_failed`);
+    }
+  }
+);
 
 module.exports = router;
